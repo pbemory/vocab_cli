@@ -22,6 +22,7 @@ read_history:
 '''
 def read_history():
     pass
+    #best way to store words learned this week, between methods?
 
 '''
 
@@ -54,7 +55,12 @@ def run_vocab_exercise(word_bank_path: str):
                             writer.writerow(row)
                             quit = True
                         if quit is False:
-                            confirm_answer_prompt = input(f"Was your word '{word}'? ")
+                            word_ex = "ex: "
+                            try:
+                                word_ex += word_results['exampleUses'][0]['text']
+                            except:
+                                word_ex += "No example found." 
+                            confirm_answer_prompt = input(f"Was your word '{word}' {word_ex}? ")
                             if confirm_answer_prompt == 'y':
                                 row = level_up_word(row)
                                 leveled_up_words += 1
