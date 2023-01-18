@@ -5,13 +5,21 @@ import config
 
 class WordnikClient:
 
-    def __init__(self, api_key=config.api_key):
-        self.api_key = api_key
+    api_key = config.api_key
 
-    def get_word_def_and_ex(self, word: str) -> dict:
+    @classmethod
+    def get_word_definition(cls, word: str) -> str:
         url = f"https://api.wordnik.com/v4/word.json/{word}/definitions"
-        params = {'api_key': self.api_key, 'limit': '1'}
+        params = {'api_key': cls.api_key, 'limit': '1'}
         response = requests.get(url, params=params).json()
-        #response is technically a list, but we only want the first item
-        return response[0]
+        word_def = response[0]['text']
+        return word_def
+
+    @classmethod
+    def get_word_example(cls, word:str) -> str:
+        url = f"https://api.wordnik.com/v4/word.json/{word}/examples"
+        params = {'api_key': cls.api_key, 'limit': '1'}
+        response = requests.get(url,params=params).json()
+        word_example = response['examples'][0]['text']
+        return word_example
 
