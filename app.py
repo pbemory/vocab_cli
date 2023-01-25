@@ -1,4 +1,5 @@
-import csv, os, random, sys 
+import csv, os, random, sys
+import asyncio
 from wordnik_client import WordnikClient
 
 '''
@@ -47,13 +48,13 @@ def run_vocab_exercise(word_bank_path: str):
                 else:
                     word = row[0].strip()
                     try:
-                        word_def = WordnikClient.get_word_definition(word)
-                        word_prompt = input(f"What word means '{word_def}'? ")
+                        word_result = asyncio.run(WordnikClient.get_word_definition_and_example(word))
+                        word_prompt = input(f"What word means '{word_result.defintion}'? ")
                         if word_prompt == 'q':
                             writer.writerow(row)
                             quit = True
                         if quit is False:
-                            confirm_answer_prompt = input(f"Was your word '{word}'? ")
+                            confirm_answer_prompt = input(f"Was your word '{word}'? Ex: '{word_result.example}' ")
                             if confirm_answer_prompt == 'y':
                                 row = level_up_word(row)
                                 leveled_up_words += 1
@@ -63,7 +64,7 @@ def run_vocab_exercise(word_bank_path: str):
                                 quit = True
                     except:
                         writer.writerow(row)
-                        print(f"Wordnik couldn't find a definition for '{word}'")
+                        print(f"Something went wrong for '{word}'")
         new_word_bank.close()
     csvfile.close()
     os.remove(word_bank_path)
