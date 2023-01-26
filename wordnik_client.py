@@ -4,8 +4,10 @@ import asyncio
 import aiohttp
 
 class WordnikResult:
-    defintion: str
-    example: str
+
+    def __init__(self, definition: str, example: str):
+        self.definition = definition
+        self.example = example
 
 class WordnikClient:
 
@@ -40,9 +42,7 @@ class WordnikClient:
             tasks.append(asyncio.create_task(cls.get_word_definition(word,session)))
             tasks.append(asyncio.create_task(cls.get_word_example(word,session)))
             results = await asyncio.gather(*tasks)
-            wordnik_result = WordnikResult()
-            wordnik_result.defintion = results[0]
-            wordnik_result.example = results[1]
+            wordnik_result = WordnikResult(definition=results[0],example=results[1])
             return wordnik_result
 
 
