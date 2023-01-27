@@ -51,4 +51,9 @@ class WordnikClient:
         async with session.get(url=url,params=params) as response:
             return await response.json()
 
-#asyncio.run(WordnikClient.get_word_definition_and_example('overhang'))
+'''
+Code below for debugging.
+'''
+# wordnik_result = asyncio.run(WordnikClient.get_word_definition_and_example('parsimony'))
+# print(wordnik_result.definition)
+# print(wordnik_result.example)

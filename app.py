@@ -1,11 +1,12 @@
 import csv, os, random, sys
+from datetime import datetime, date, timedelta
 import asyncio
 from wordnik_client import WordnikClient
 
 '''
 main's tasks:
 (1) give a status report (based on read_history); 
-(2) run the app.
+(2) run the vocab exercise.
 '''
 def main():
     args = sys.argv[1:]
@@ -13,22 +14,31 @@ def main():
         word_bank_path = args[1]
     else:
         word_bank_path = 'word_bank.csv'
-    read_history()
-    run_vocab_exercise(word_bank_path)
+    words_learned_this_week = read_history()
+    run_vocab_exercise(word_bank_path, words_learned_this_week)
 
 '''
 read_history:
---determine last time app ran by checking last save date
---tell us how many words we've learned this week (starting from Sunday)
+--tell us how many words we've learned this week (since Sunday)
 '''
-def read_history():
-    pass
-    #best way to store words learned this week, between methods?
+def read_history() -> int:
+    most_recent_sunday = date.today() - timedelta(date.weekday(datetime.now())+1)
+    with open('status_db.csv','r') as status_db:
+        db_reader = csv.reader(status_db)
+        last_checked_sunday = date.fromisoformat(next(db_reader)[1])
+        if most_recent_sunday > last_checked_sunday:
+            words_learned_this_week = 0
+        else:
+            words_learned_this_week = int(next(db_reader)[1])
+    status_db.close()
+    print(f"{words_learned_this_week} word{'s'[:words_learned_this_week^1]} learned this week...")
+    return words_learned_this_week
 
 '''
-
+run_vocab_exercise:
+--add comment
 '''
-def run_vocab_exercise(word_bank_path: str):
+def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int):
     leveled_up_words = 0
     with open(word_bank_path,'r') as csvfile:
         rows = csvfile.readlines()
@@ -54,10 +64,11 @@ def run_vocab_exercise(word_bank_path: str):
                             writer.writerow(row)
                             quit = True
                         if quit is False:
-                            confirm_answer_prompt = input(f"Was your word '{word}'? Ex: '{word_result.example}' ")
+                            confirm_answer_prompt = input(f"Example: '{word_result.example}'\nWas your word '{word}'? (y/n): ")
                             if confirm_answer_prompt == 'y':
                                 row = level_up_word(row)
                                 leveled_up_words += 1
+                                words_learned_this_week += 1
                                 print(f"'{word}' leveled up! {leveled_up_words} word{'s'[:leveled_up_words^1]} learned so far ...")
                             writer.writerow(row)
                             if confirm_answer_prompt == 'q':
@@ -67,8 +78,17 @@ def run_vocab_exercise(word_bank_path: str):
                         print(f"Something went wrong for '{word}'")
         new_word_bank.close()
     csvfile.close()
+    save(words_learned_this_week)
     os.remove(word_bank_path)
     os.rename(word_bank_path.replace('.csv','_temp'),word_bank_path)
+
+def save(words_learned_this_week: int):
+    most_recent_sunday = date.today() - timedelta(date.weekday(datetime.now())+1)
+    with open('status_db.csv','w') as status_db:
+        writer = csv.writer(status_db)
+        writer.writerow(["Date of last checked Sunday", str(most_recent_sunday)])
+        writer.writerow(["Words learned since Sunday", str(words_learned_this_week)])
+    status_db.close()
 
 def level_up_word(csv_row:list) -> list:
     word_level_number = int(csv_row[2])
