@@ -42,6 +42,7 @@ def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int):
     with open(word_bank_path,'r') as csvfile:
         rows = csvfile.readlines()
         total_word_count = len(rows)
+        print(total_word_count)
         random.shuffle(rows)
         reader = csv.reader(rows)
         new_word_bank = open(word_bank_path.replace('.csv','_temp'),'w')
@@ -71,9 +72,10 @@ def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int):
                             writer.writerow(row)
                             if confirm_answer_prompt == 'q':
                                 quit = True
-                    except:
+                    except Exception as e:
                         writer.writerow(row)
                         print(f"Something went wrong for '{word}'")
+                        print(e)
         new_word_bank.close()
     csvfile.close()
     save(words_learned_this_week)
@@ -89,9 +91,9 @@ def save(words_learned_this_week: int):
     status_db.close()
 
 def level_up_word(csv_row:list) -> list:
-    word_level_number = int(csv_row[2])
+    word_level_number = int(csv_row[1])
     word_level_number += 1
-    new_row = [csv_row[0], csv_row[1], " " + str(word_level_number)]
+    new_row = [csv_row[0], " " + str(word_level_number)]
     return new_row
 
 if __name__ == '__main__':
