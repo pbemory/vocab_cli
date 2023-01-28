@@ -3,12 +3,12 @@ from datetime import datetime, date, timedelta
 import asyncio
 from wordnik_client import WordnikClient
 
-'''
-main's tasks:
-(1) give a status report (based on read_history); 
-(2) run the vocab exercise.
-'''
+
 def main():
+    """main's tasks:
+    (1) give a status report (based on read_history); 
+    (2) run the vocab exercise.
+    """
     args = sys.argv[1:]
     if len(args) == 2 and args[0] == '-wb':
         word_bank_path = args[1]
@@ -17,11 +17,9 @@ def main():
     words_learned_this_week = read_history()
     run_vocab_exercise(word_bank_path, words_learned_this_week)
 
-'''
-read_history:
---tell us how many words we've learned this week (since Sunday)
-'''
 def read_history() -> int:
+    """status_db.csv (1) stores words learned this week (since Sunday); (2) stores last time run_vocab_exercise saved, which tells us to reset the word count (if the app hasn't run this week) or preserve the word count...
+    """
     most_recent_sunday = date.today() - timedelta(date.weekday(datetime.now())+1)
     with open('status_db.csv','r') as status_db:
         db_reader = csv.reader(status_db)
@@ -34,11 +32,12 @@ def read_history() -> int:
     print(f"{words_learned_this_week} word{'s'[:words_learned_this_week^1]} learned this week...")
     return words_learned_this_week
 
-'''
-run_vocab_exercise:
---add comment
-'''
 def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int):
+    """count words leveled up this session.
+    --read from the existing word bank, while creating a new, writable word bank. The new word bank is temporarily appended with '_temp', until saving and overwriting the old word bank.
+    --get word definitions and examples through WordnikClient
+    --save by writing to status_db.csv
+    """
     leveled_up_words = 0
     with open(word_bank_path,'r') as csvfile:
         rows = csvfile.readlines()
@@ -53,12 +52,12 @@ def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int):
             if quit is True:
                 writer.writerow(row)
             else:
-                if int(row[2].strip()) == 1:
+                if int(row[1].strip()) == 1:
                     writer.writerow(row)
                 else:
                     word = row[0].strip()
                     try:
-                        word_result = asyncio.run(WordnikClient.get_word_definition_and_example(word))
+                        word_result = asyncio.run(WordnikClient().get_word_definition_and_example(word))
                         word_prompt = input(f"What word means '{word_result.definition}'? ")
                         if word_prompt == 'q':
                             writer.writerow(row)
@@ -73,9 +72,10 @@ def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int):
                             writer.writerow(row)
                             if confirm_answer_prompt == 'q':
                                 quit = True
-                    except:
+                    except Exception as e:
                         writer.writerow(row)
                         print(f"Something went wrong for '{word}'")
+                        print(e)
         new_word_bank.close()
     csvfile.close()
     save(words_learned_this_week)
@@ -91,9 +91,9 @@ def save(words_learned_this_week: int):
     status_db.close()
 
 def level_up_word(csv_row:list) -> list:
-    word_level_number = int(csv_row[2])
+    word_level_number = int(csv_row[1])
     word_level_number += 1
-    new_row = [csv_row[0], csv_row[1], " " + str(word_level_number)]
+    new_row = [csv_row[0], " " + str(word_level_number)]
     return new_row
 
 if __name__ == '__main__':
