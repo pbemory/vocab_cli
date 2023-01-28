@@ -56,7 +56,7 @@ def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int):
                 else:
                     word = row[0].strip()
                     try:
-                        word_result = asyncio.run(WordnikClient.get_word_definition_and_example(word))
+                        word_result = asyncio.run(WordnikClient().get_word_definition_and_example(word))
                         word_prompt = input(f"What word means '{word_result.definition}'? ")
                         if word_prompt == 'q':
                             writer.writerow(row)
