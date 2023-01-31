@@ -5,10 +5,7 @@ from wordnik_client import WordnikClient
 
 
 def main():
-    """main's tasks:
-    (1) give a status report (based on read_history); 
-    (2) run the vocab exercise.
-    """
+    """main's tasks: give a status report (based on read_history); run the vocab exercise."""
     args = sys.argv[1:]
     if len(args) == 2 and args[0] == '-wb':
         word_bank_path = args[1]
@@ -18,9 +15,12 @@ def main():
     run_vocab_exercise(word_bank_path, words_learned_this_week)
 
 def read_history() -> int:
-    """status_db.csv (1) stores words learned this week (since Sunday); (2) stores last time run_vocab_exercise saved, which tells us to reset the word count (if the app hasn't run this week) or preserve the word count...
+    """status_db.csv stores words learned this week (since Sunday) + stores last time run_vocab_exercise saved, which tells us to reset the word count (if the app hasn't run this week) or preserve the word count...
     """
-    most_recent_sunday = date.today() - timedelta(date.weekday(datetime.now())+1)
+    if date.weekday(datetime.now()) == 6:
+        most_recent_sunday = date.today()
+    else:
+        most_recent_sunday = date.today() - timedelta(date.weekday(datetime.now())+1)
     with open('status_db.csv','r') as status_db:
         db_reader = csv.reader(status_db)
         last_checked_sunday = date.fromisoformat(next(db_reader)[1])
@@ -33,16 +33,15 @@ def read_history() -> int:
     return words_learned_this_week
 
 def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int):
-    """count words leveled up this session.
-    --read from the existing word bank, while creating a new, writable word bank. The new word bank is temporarily appended with '_temp', until saving and overwriting the old word bank.
-    --get word definitions and examples through WordnikClient
-    --save by writing to status_db.csv
+    """Read from the existing word bank, while creating a new, writable word bank. The new word bank is temporarily appended with '_temp', until saving and overwriting the old word bank.
+    Get word definitions and examples through WordnikClient.
+    Save status to status_db.csv.
     """
     leveled_up_words = 0
     with open(word_bank_path,'r') as csvfile:
         rows = csvfile.readlines()
         total_word_count = len(rows)
-        print(total_word_count)
+        #print(total_word_count)
         random.shuffle(rows)
         reader = csv.reader(rows)
         new_word_bank = open(word_bank_path.replace('.csv','_temp'),'w')
@@ -75,7 +74,7 @@ def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int):
                     except Exception as e:
                         writer.writerow(row)
                         print(f"Something went wrong for '{word}'")
-                        print(e)
+                        print("Exception: " + str(e))
         new_word_bank.close()
     csvfile.close()
     save(words_learned_this_week)
@@ -83,7 +82,10 @@ def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int):
     os.rename(word_bank_path.replace('.csv','_temp'),word_bank_path)
 
 def save(words_learned_this_week: int):
-    most_recent_sunday = date.today() - timedelta(date.weekday(datetime.now())+1)
+    if date.weekday(datetime.now()) == 6:
+        most_recent_sunday = date.today()
+    else:
+        most_recent_sunday = date.today() - timedelta(date.weekday(datetime.now())+1)
     with open('status_db.csv','w') as status_db:
         writer = csv.writer(status_db)
         writer.writerow(["Date of last checked Sunday", str(most_recent_sunday)])

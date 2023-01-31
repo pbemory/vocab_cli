@@ -12,24 +12,34 @@ class WordnikClient:
 
     api_key = config.api_key
     wordnik_api_base_url = f"https://api.wordnik.com/v4/word.json/"
-    params = {'api_key': api_key, 'limit': '1'}
+    params = {'api_key': api_key, 'limit': '3'}
 
     async def get_word_definition(self, word: str, session: aiohttp.ClientSession):
-        url = self.wordnik_api_base_url + f"{word}/definitions"       
+        url = self.wordnik_api_base_url + f"{word}/definitions"
+        word_def = "No definition found."      
         try:
-            results = await self.fetch(url,self.params,session)
-            word_def = results[0]['text']
+            definitions = await self.fetch(url,self.params,session)
+            definition_key = 'text'
+            for definition in definitions:
+                if definition_key in definition:
+                    word_def = definition[definition_key]
+                    break
         except Exception as e:
-            word_def = 'No definition found.'
+            word_def = "Exception: " + str(e)
         return word_def
 
     async def get_word_example(self, word: str, session: aiohttp.ClientSession):
         url = self.wordnik_api_base_url + f"{word}/examples"
+        word_example = "No example found."
         try:
-            results = await self.fetch(url,self.params,session)
-            word_example = results['examples'][0]['text']
+            examples = await self.fetch(url,self.params,session)
+            example_key = 'text'
+            for example in examples['examples']:
+                if example_key in example:
+                    word_example = example[example_key]
+                    break
         except Exception as e:
-            word_example = 'No examples found.'
+            word_example = "Exception: " + str(e)
         return word_example
 
     async def get_word_definition_and_example(self, word: str) -> WordnikResult:
