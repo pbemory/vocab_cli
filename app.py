@@ -15,7 +15,9 @@ def main():
     run_vocab_exercise(word_bank_path, words_learned_this_week)
 
 def read_history() -> int:
-    """status_db.csv stores words learned this week (since Sunday) + stores last time run_vocab_exercise saved, which tells us to reset the word count (if the app hasn't run this week) or preserve the word count...
+    """status_db.csv stores words learned this week (since Sunday) + 
+    stores last time run_vocab_exercise saved, which tells us to reset the word count (if the app hasn't run this week) 
+    or preserve the word count...
     """
     if date.weekday(datetime.now()) == 6:
         most_recent_sunday = date.today()
@@ -33,7 +35,8 @@ def read_history() -> int:
     return words_learned_this_week
 
 def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int):
-    """Read from the existing word bank, while creating a new, writable word bank. The new word bank is temporarily appended with '_temp', until saving and overwriting the old word bank.
+    """Read from the existing word bank, while creating a new, writable word bank. 
+    The new word bank is temporarily appended with '_temp', until saving and overwriting the old word bank.
     Get word definitions and examples through WordnikClient.
     Save status to status_db.csv.
     """
