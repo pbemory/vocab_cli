@@ -20,10 +20,14 @@ class WordnikClient:
         try:
             definitions = await self.fetch(url,self.params,session)
             definition_key = 'text'
-            for definition in definitions:
-                if definition_key in definition:
-                    word_def = definition[definition_key]
-                    break
+            error_key = 'message'
+            if error_key in definitions:
+                word_def = "Error: " + definitions[error_key]
+            else:
+                for definition in definitions:
+                    if definition_key in definition:
+                        word_def = definition[definition_key]
+                        break
         except Exception as e:
             word_def = "Exception: " + str(e)
         return word_def
@@ -34,10 +38,14 @@ class WordnikClient:
         try:
             examples = await self.fetch(url,self.params,session)
             example_key = 'text'
-            for example in examples['examples']:
-                if example_key in example:
-                    word_example = example[example_key]
-                    break
+            error_key = 'message'
+            if error_key in examples:
+                word_example = "Error: " + examples[error_key]
+            else:
+                for example in examples['examples']:
+                    if example_key in example:
+                        word_example = example[example_key]
+                        break
         except Exception as e:
             word_example = "Exception: " + str(e)
         return word_example

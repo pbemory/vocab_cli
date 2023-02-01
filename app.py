@@ -16,7 +16,8 @@ def main():
 
 def read_history() -> int:
     """status_db.csv stores words learned this week (since Sunday) + 
-    stores last time run_vocab_exercise saved, which tells us to reset the word count (if the app hasn't run this week) 
+    stores last time run_vocab_exercise saved, 
+    which tells us to reset the word count (if the app hasn't run this week) 
     or preserve the word count...
     """
     if date.weekday(datetime.now()) == 6:
