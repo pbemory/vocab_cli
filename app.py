@@ -31,8 +31,10 @@ def read_history() -> int:
             words_learned_this_week = 0
         else:
             words_learned_this_week = int(next(db_reader)[1])
+        words_remaining = int(next(db_reader)[1])
     status_db.close()
     print(f"{words_learned_this_week} word{'s'[:words_learned_this_week^1]} learned this week...")
+    print(f"{words_remaining} word{'s'[:words_remaining^1]} remaining...")
     return words_learned_this_week
 
 def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int):
@@ -42,7 +44,7 @@ def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int):
     Save status to status_db.csv.
     """
     leveled_up_words = 0
-    #words_left = 0
+    words_left = 0
     with open(word_bank_path,'r') as csvfile:
         rows = csvfile.readlines()
         total_word_count = len(rows)
@@ -55,7 +57,8 @@ def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int):
         for row in reader:
             if quit is True:
                 writer.writerow(row)
-                #words_left += 1
+                if int(row[1].strip()) == 0:
+                    words_left += 1
             else:
                 if int(row[1].strip()) == 1:
                     writer.writerow(row)
@@ -66,7 +69,7 @@ def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int):
                         word_prompt = input(f"What word means '{word_result.definition}'? ")
                         if word_prompt == 'q':
                             writer.writerow(row)
-                            #words_left += 1
+                            words_left += 1
                             quit = True
                         if quit is False:
                             print(f"****\nExample: '{word_result.example}'\n****")
@@ -76,20 +79,21 @@ def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int):
                                 words_learned_this_week += 1
                                 print(f"'{word}' leveled up! {leveled_up_words} word{'s'[:leveled_up_words^1]} learned so far ...\n****")
                             else:
-                                #words_left += 1
+                                words_left += 1
                                 print(f"'{word_prompt}' did not match '{word}'.\n****")
                             writer.writerow(row)
                     except Exception as e:
                         writer.writerow(row)
+                        words_left += 1
                         print(f"Something went wrong for '{word}'")
                         print("Exception: " + str(e))
         new_word_bank.close()
     csvfile.close()
-    save(words_learned_this_week)
+    save(words_learned_this_week, words_left)
     os.remove(word_bank_path)
     os.rename(word_bank_path.replace('.csv','_temp'),word_bank_path)
 
-def save(words_learned_this_week: int):
+def save(words_learned_this_week: int, words_left: int):
     if date.weekday(datetime.now()) == 6:
         most_recent_sunday = date.today()
     else:
@@ -98,6 +102,7 @@ def save(words_learned_this_week: int):
         writer = csv.writer(status_db)
         writer.writerow(["Date of last checked Sunday", str(most_recent_sunday)])
         writer.writerow(["Words learned since Sunday", str(words_learned_this_week)])
+        writer.writerow(["Words remaining", str(words_left)])
     status_db.close()
 
 def level_up_word(csv_row:list) -> list:
