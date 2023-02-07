@@ -42,6 +42,7 @@ def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int):
     Save status to status_db.csv.
     """
     leveled_up_words = 0
+    #words_left = 0
     with open(word_bank_path,'r') as csvfile:
         rows = csvfile.readlines()
         total_word_count = len(rows)
@@ -54,6 +55,7 @@ def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int):
         for row in reader:
             if quit is True:
                 writer.writerow(row)
+                #words_left += 1
             else:
                 if int(row[1].strip()) == 1:
                     writer.writerow(row)
@@ -64,17 +66,19 @@ def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int):
                         word_prompt = input(f"What word means '{word_result.definition}'? ")
                         if word_prompt == 'q':
                             writer.writerow(row)
+                            #words_left += 1
                             quit = True
                         if quit is False:
-                            confirm_answer_prompt = input(f"Example: '{word_result.example}'\nWas your word '{word}'? (y/n): ")
-                            if confirm_answer_prompt == 'y':
+                            print(f"****\nExample: '{word_result.example}'\n****")
+                            if word_prompt == word:
                                 row = level_up_word(row)
                                 leveled_up_words += 1
                                 words_learned_this_week += 1
-                                print(f"'{word}' leveled up! {leveled_up_words} word{'s'[:leveled_up_words^1]} learned so far ...")
+                                print(f"'{word}' leveled up! {leveled_up_words} word{'s'[:leveled_up_words^1]} learned so far ...\n****")
+                            else:
+                                #words_left += 1
+                                print(f"'{word_prompt}' did not match '{word}'.\n****")
                             writer.writerow(row)
-                            if confirm_answer_prompt == 'q':
-                                quit = True
                     except Exception as e:
                         writer.writerow(row)
                         print(f"Something went wrong for '{word}'")
