@@ -33,8 +33,7 @@ def read_history() -> int:
             words_learned_this_week = int(next(db_reader)[1])
         words_remaining = int(next(db_reader)[1])
     status_db.close()
-    print(f"{words_learned_this_week} word{'s'[:words_learned_this_week^1]} learned this week...")
-    print(f"{words_remaining} word{'s'[:words_remaining^1]} remaining...")
+    print(f"{words_learned_this_week} word{'s'[:words_learned_this_week^1]} learned this week of {words_remaining} word{'s'[:words_remaining^1]} remaining...")
     return words_learned_this_week
 
 def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int):
