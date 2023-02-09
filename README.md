@@ -1,5 +1,5 @@
 # vocab-cli
-  * Tiny Python tool for building vocabulary from a word bank using the wordnik api.
+  * Tiny Python tool for building vocabulary from the command line using a word bank and wordnik api.
 
 # contents
   * app.py—runs the vocab exercise and prints progress.
