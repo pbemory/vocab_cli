@@ -80,7 +80,7 @@ def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int):
                             user_quit = True
                         if user_quit is False:
                             print(
-                                f"****\nExample: '{word_result.example}'\n****")
+                                f"********\nExample: '{word_result.example}'\n********")
                             if word_prompt == word:
                                 row = level_up_word(row)
                                 leveled_up_words += 1

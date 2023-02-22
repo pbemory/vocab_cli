@@ -4,7 +4,7 @@ import config
 
 
 class WordResult:
-    """Used for storing results of wordnik fetches into consumable object."""
+    """Used for storing results of fetches from dictionary apis into consumable object."""
 
     def __init__(self, definition: str, example: str):
         self.definition = definition
@@ -12,7 +12,7 @@ class WordResult:
 
 
 class WordClient:
-    """Client for interacting with the WordsAPI."""
+    """Client for interacting with WordsAPI and Wordnik API."""
 
     words_api_headers = config.words_api_headers
     words_api_base_url = "https://wordsapiv1.p.rapidapi.com/words/"
@@ -37,7 +37,7 @@ class WordClient:
         return word_def
 
     async def get_words_api_example(self, word: str, session: aiohttp.ClientSession):
-        """Fetch example of provided word. Try 3 of wordnik's dictionaries."""
+        """Fetch example of provided word from WordsAPI."""
         url = self.words_api_base_url + f"{word}/examples"
         word_example = "No example found."
         try:
@@ -50,7 +50,7 @@ class WordClient:
         return word_example
 
     async def get_wordnik_api_example(self, word: str, session: aiohttp.ClientSession):
-        """Fetch example of provided word. Try 3 of wordnik's dictionaries."""
+        """Fetch example of provided word. Try 3 of wordnik's sources (using wordnik_params)."""
         url = self.wordnik_api_base_url + f"{word}/examples"
         word_example = "No example found."
         try:
@@ -69,7 +69,7 @@ class WordClient:
         return word_example
 
     async def get_word_definition_and_example(self, word: str) -> WordResult:
-        """Queue and execute definition + examples fetches. Store in WordnikResult object."""
+        """Queue and execute definition + examples fetches. Store in WordResult object."""
         async with aiohttp.ClientSession() as session:
             tasks = []
             tasks.append(asyncio.create_task(
@@ -82,7 +82,7 @@ class WordClient:
             return word_result
 
     async def fetch(self, url: str, headers: dict, session: aiohttp.ClientSession) -> dict:
-        """Helper method of async request/response within session."""
+        """Helper method for async request/response within session."""
         async with session.get(url=url, headers=headers) as response:
             return await response.json()
 
