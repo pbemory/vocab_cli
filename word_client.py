@@ -19,7 +19,7 @@ class WordClient:
     wordnik_api_base_url = "https://api.wordnik.com/v4/word.json/"
     wordnik_params = {'api_key': config.wordnik_api_key, 'limit': '3'}
 
-    async def get_words_api_definition(self, word: str, session: aiohttp.ClientSession):
+    async def get_words_api_definition(self, word: str, session: aiohttp.ClientSession) -> str:
         """Fetch definition of provided word from WordsAPI."""
         url = self.words_api_base_url + f"{word}/definitions"
         word_def = "No definition found."
@@ -36,7 +36,7 @@ class WordClient:
             word_def = "Exception: " + str(exc)
         return word_def
 
-    async def get_words_api_example(self, word: str, session: aiohttp.ClientSession):
+    async def get_words_api_example(self, word: str, session: aiohttp.ClientSession) -> str:
         """Fetch example of provided word from WordsAPI."""
         url = self.words_api_base_url + f"{word}/examples"
         word_example = "No example found."
@@ -49,7 +49,7 @@ class WordClient:
             word_example = "Exception: " + str(exc)
         return word_example
 
-    async def get_wordnik_api_example(self, word: str, session: aiohttp.ClientSession):
+    async def get_wordnik_api_example(self, word: str, session: aiohttp.ClientSession) -> str:
         """Fetch example of provided word. Try 3 of wordnik's sources (using wordnik_params)."""
         url = self.wordnik_api_base_url + f"{word}/examples"
         word_example = "No example found."

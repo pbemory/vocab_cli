@@ -43,7 +43,7 @@ def read_history() -> int:
     return words_learned_this_week
 
 
-def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int):
+def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int) -> None:
     """Read from the existing word bank, while creating a new, writable word bank. 
     The new word bank is temporarily appended with '_temp', until saving and overwriting the old word bank.
     Get word definitions and examples through WordnikClient.
@@ -104,7 +104,7 @@ def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int):
     os.rename(word_bank_path.replace('.csv', '_temp'), word_bank_path)
 
 
-def save(words_learned_this_week: int, words_left: int):
+def save(words_learned_this_week: int, words_left: int) -> None:
     """
     Save progress to status_db.csv
     """
