@@ -10,10 +10,8 @@ from word_client import WordClient
 def main():
     """Get a progress report based on read_history and run the vocab exercise."""
     args = sys.argv[1:]
-    if len(args) > 0 and args[0] == '-wb':
-        word_bank_path = args[1]
-    else:
-        word_bank_path = 'word_bank.csv'
+    word_bank_path = args[1] if len(
+        args) > 0 and args[0] == '-wb' else 'word_bank.csv'
     words_learned_this_week = read_history()
     run_vocab_exercise(word_bank_path, words_learned_this_week)
 
@@ -118,12 +116,11 @@ def level_up_word(csv_row: list) -> list:
     new_row = [csv_row[0], " " + str(word_level_number)]
     return new_row
 
+
 def get_most_recent_sunday() -> date:
     """Find the most recent Sunday."""
-    if date.weekday(datetime.now()) == 6:
-        most_recent_sunday = date.today()
-    else:
-        most_recent_sunday = date.today() - timedelta(date.weekday(datetime.now())+1)
+    most_recent_sunday = date.today() if date.weekday(datetime.now(
+    )) == 6 else date.today() - timedelta(date.weekday(datetime.now())+1)
     return most_recent_sunday
 
 
