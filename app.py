@@ -8,9 +8,9 @@ from word_client import WordClient
 
 
 def main():
-    """main's tasks: give a status report (based on read_history); run the vocab exercise."""
+    """Get a progress report based on read_history and run the vocab exercise."""
     args = sys.argv[1:]
-    if len(args) == 2 and args[0] == '-wb':
+    if len(args) > 0 and args[0] == '-wb':
         word_bank_path = args[1]
     else:
         word_bank_path = 'word_bank.csv'
@@ -19,15 +19,10 @@ def main():
 
 
 def read_history() -> int:
-    """status_db.csv stores words learned this week (since Sunday) + 
-    stores last time run_vocab_exercise saved, 
-    which tells us to reset the word count (if the app hasn't run this week) 
-    or preserve the word count...
+    """ From status_db.csv, read how many words learned (since Sunday) 
+    and words remaining in the wordbank. 
     """
-    if date.weekday(datetime.now()) == 6:
-        most_recent_sunday = date.today()
-    else:
-        most_recent_sunday = date.today() - timedelta(date.weekday(datetime.now())+1)
+    most_recent_sunday = get_most_recent_sunday()
     with open('status_db.csv', 'r', encoding='UTF-8') as status_db:
         db_reader = csv.reader(status_db)
         last_checked_sunday = date.fromisoformat(next(db_reader)[1])
@@ -46,7 +41,7 @@ def read_history() -> int:
 def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int) -> None:
     """Read from the existing word bank, while creating a new, writable word bank. 
     The new word bank is temporarily appended with '_temp', until saving and overwriting the old word bank.
-    Get word definitions and examples through WordnikClient.
+    Get word definitions and examples through WordClient.
     Save status to status_db.csv.
     """
     leveled_up_words = 0
@@ -105,17 +100,11 @@ def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int) -> Non
 
 
 def save(words_learned_this_week: int, words_left: int) -> None:
-    """
-    Save progress to status_db.csv
-    """
-    if date.weekday(datetime.now()) == 6:
-        most_recent_sunday = date.today()
-    else:
-        most_recent_sunday = date.today() - timedelta(date.weekday(datetime.now())+1)
+    """Save progress to status_db.csv"""
     with open('status_db.csv', 'w', encoding='UTF-8') as status_db:
         writer = csv.writer(status_db)
         writer.writerow(
-            ["Date of last checked Sunday", str(most_recent_sunday)])
+            ["Date of last checked Sunday", str(get_most_recent_sunday())])
         writer.writerow(["Words learned since Sunday",
                         str(words_learned_this_week)])
         writer.writerow(["Words remaining", str(words_left)])
@@ -123,13 +112,19 @@ def save(words_learned_this_week: int, words_left: int) -> None:
 
 
 def level_up_word(csv_row: list) -> list:
-    """
-    Increment word score column when word is correct in run_vocab_exercise
-    """
+    """Increment word score when word is correct in run_vocab_exercise."""
     word_level_number = int(csv_row[1])
     word_level_number += 1
     new_row = [csv_row[0], " " + str(word_level_number)]
     return new_row
+
+def get_most_recent_sunday() -> date:
+    """Find the most recent Sunday."""
+    if date.weekday(datetime.now()) == 6:
+        most_recent_sunday = date.today()
+    else:
+        most_recent_sunday = date.today() - timedelta(date.weekday(datetime.now())+1)
+    return most_recent_sunday
 
 
 if __name__ == '__main__':
