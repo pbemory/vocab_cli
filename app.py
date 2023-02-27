@@ -92,12 +92,10 @@ def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int) -> Non
                         print("Exception: " + str(exc))
         new_word_bank.close()
     csvfile.close()
-    save(words_learned_this_week, words_left)
-    os.remove(word_bank_path)
-    os.rename(word_bank_path.replace('.csv', '_temp'), word_bank_path)
+    save(word_bank_path, words_learned_this_week, words_left)
 
 
-def save(words_learned_this_week: int, words_left: int) -> None:
+def save(word_bank_path: str, words_learned_this_week: int, words_left: int) -> None:
     """Save progress to status_db.csv"""
     with open('status_db.csv', 'w', encoding='UTF-8') as status_db:
         writer = csv.writer(status_db)
@@ -107,6 +105,8 @@ def save(words_learned_this_week: int, words_left: int) -> None:
                         str(words_learned_this_week)])
         writer.writerow(["Words remaining", str(words_left)])
     status_db.close()
+    os.remove(word_bank_path)
+    os.rename(word_bank_path.replace('.csv', '_temp'), word_bank_path)
 
 
 def level_up_word(csv_row: list) -> list:
