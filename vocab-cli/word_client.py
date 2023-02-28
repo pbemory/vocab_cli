@@ -13,6 +13,7 @@ class WordResult:
 
 class WordClient:
     """Client for interacting with WordsAPI and Wordnik API."""
+
     words_api_headers = config.words_api_headers
     words_api_base_url = "https://wordsapiv1.p.rapidapi.com/words/"
     wordnik_api_base_url = "https://api.wordnik.com/v4/word.json/"

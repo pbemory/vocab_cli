@@ -10,8 +10,9 @@ from word_client import WordClient
 def main():
     """Get a progress report based on read_history and run the vocab exercise."""
     args = sys.argv[1:]
-    word_bank_path = args[1] if len(
-        args) > 0 and args[0] == '-wb' else 'word_bank.csv'
+    
+    word_bank_path = os.path.join(os.path.dirname(__file__), args[1]) if len(
+        args) > 0 and args[0] == '-wb' else os.path.join(os.path.dirname(__file__),'word_bank.csv')
     words_learned_this_week = read_history()
     run_vocab_exercise(word_bank_path, words_learned_this_week)
 
@@ -21,7 +22,8 @@ def read_history() -> int:
     and words remaining in the wordbank. 
     """
     most_recent_sunday = get_most_recent_sunday()
-    with open('status_db.csv', 'r', encoding='UTF-8') as status_db:
+    status_db_path = os.path.join(os.path.dirname(__file__), 'status_db.csv')
+    with open(status_db_path, 'r', encoding='UTF-8') as status_db:
         db_reader = csv.reader(status_db)
         last_checked_sunday = date.fromisoformat(next(db_reader)[1])
         if most_recent_sunday > last_checked_sunday:
@@ -97,7 +99,8 @@ def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int) -> Non
 
 def save(word_bank_path: str, words_learned_this_week: int, words_left: int) -> None:
     """Save progress to status_db.csv"""
-    with open('status_db.csv', 'w', encoding='UTF-8') as status_db:
+    status_db_path = os.path.join(os.path.dirname(__file__), 'status_db.csv')
+    with open(status_db_path, 'w', encoding='UTF-8') as status_db:
         writer = csv.writer(status_db)
         writer.writerow(
             ["Date of last checked Sunday", str(get_most_recent_sunday())])
