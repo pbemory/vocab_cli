@@ -1,21 +1,17 @@
 import csv
-import os
+import sys, os
 import random
-import sys
 from datetime import datetime, date, timedelta
 import asyncio
-from word_client import WordClient
+from vocab_cli import word_client
 
 
-def main():
+def launch(args: list) -> None:
     """Get a progress report based on read_history and run the vocab exercise."""
-    args = sys.argv[1:]
-    
     word_bank_path = os.path.join(os.path.dirname(__file__), args[1]) if len(
         args) > 0 and args[0] == '-wb' else os.path.join(os.path.dirname(__file__),'word_bank.csv')
     words_learned_this_week = read_history()
     run_vocab_exercise(word_bank_path, words_learned_this_week)
-
 
 def read_history() -> int:
     """ From status_db.csv, read how many words learned (since Sunday) 
@@ -66,7 +62,7 @@ def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int) -> Non
                     word = row[0].strip()
                     try:
                         word_result = asyncio.run(
-                            WordClient().get_word_definition_and_example(word))
+                            word_client.WordClient().get_word_definition_and_example(word))
                         word_prompt = input(
                             f"What word means '{word_result.definition}'? ")
                         if word_prompt == 'q':
@@ -125,7 +121,3 @@ def get_most_recent_sunday() -> date:
     most_recent_sunday = date.today() if date.weekday(datetime.now(
     )) == 6 else date.today() - timedelta(date.weekday(datetime.now())+1)
     return most_recent_sunday
-
-
-if __name__ == '__main__':
-    main()
