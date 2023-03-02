@@ -9,8 +9,8 @@
       "console": "integratedTerminal",
       "justMyCode": true,
       "cwd": "${workspaceFolder}",
-      "env": {"PYTHONPATH": "${cwd}"}
-      //"args" : ["-wb", "thefile.csv"]
+      "env": {"PYTHONPATH": "${cwd}"},
+      //"args" : ["-wb", "word_bank.csv"]
     }
   ]
 }

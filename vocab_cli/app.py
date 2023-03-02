@@ -1,17 +1,19 @@
 import csv
-import sys, os
+import os
 import random
 from datetime import datetime, date, timedelta
 import asyncio
 from vocab_cli import word_client
 
 
-def launch(args: list) -> None:
+def launch(word_bank_path: str) -> None:
     """Get a progress report based on read_history and run the vocab exercise."""
-    word_bank_path = os.path.join(os.path.dirname(__file__), args[1]) if len(
-        args) > 0 and args[0] == '-wb' else os.path.join(os.path.dirname(__file__),'word_bank.csv')
+    word_bank_path = os.path.join(
+        os.path.dirname(__file__), word_bank_path) if word_bank_path else os.path.join(
+        os.path.dirname(__file__), 'word_bank.csv')
     words_learned_this_week = read_history()
     run_vocab_exercise(word_bank_path, words_learned_this_week)
+
 
 def read_history() -> int:
     """ From status_db.csv, read how many words learned (since Sunday) 

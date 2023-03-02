@@ -1,6 +1,6 @@
 import asyncio
 import aiohttp
-import config
+from vocab_cli import config
 
 
 class WordResult:
