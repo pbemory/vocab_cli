@@ -6,7 +6,7 @@ import asyncio
 from vocab_cli import word_client
 
 
-def launch(word_bank_path: str) -> None:
+def launch(word_bank_path: str = None) -> None:
     """Get a progress report based on read_history and run the vocab exercise."""
     word_bank_path = os.path.join(
         os.path.dirname(__file__), word_bank_path) if word_bank_path else os.path.join(
