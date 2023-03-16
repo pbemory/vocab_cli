@@ -1,6 +1,6 @@
-from vocab_cli import app, __version__
-import sys
 import argparse
+from vocab_cli import app, __version__
+
 
 def parse_args():
     """Parse args with argparse."""

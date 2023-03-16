@@ -93,6 +93,8 @@ def run_vocab_exercise(word_bank_path: str, words_learned_this_week: int) -> Non
         new_word_bank.close()
     csvfile.close()
     save(word_bank_path, words_learned_this_week, words_left)
+    if user_quit is False:
+        print("You've reached the end of the word bank.")
 
 
 def save(word_bank_path: str, words_learned_this_week: int, words_left: int) -> None:
